@@ -1018,8 +1018,17 @@
               s.width = size.width
             }
           }
-          if(!$$.isNil(s.height) || !$$.isNil(s.width)) {
-            postit(null, {type:"resize", config:{client:client}, size:s})
+          // edit from https://salesforce.stackexchange.com/a/211097
+          // tries to achieve 100% width and max height possible
+          if (!$$.isNil(s.height) || !$$.isNil(s.width)) {
+              // Fix iframe at 100% width and only scale the height.
+              s.width = "100%";
+              // Prevent infinite height loop when content dynamically resizes to available height
+              if (Math.abs(sh - ch) <= 10) {
+                  s.height = Math.max(sh, ch) + "px";
+                  return;
+              }
+              postit(null, { type: "resize", config: { client: client }, size: s })
           }
         }, autogrow:function(client, b, interval) {
           var ival = $$.isNil(interval) ? 300 : interval;
